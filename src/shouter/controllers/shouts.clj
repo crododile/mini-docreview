@@ -2,7 +2,9 @@
 	(:require [compojure.core :refer [defroutes GET POST]]
 						[clojure.string :as str]
 						[ring.util.response :as ring]
+						[ring.middleware.multipart-params :as mp]
 						[shouter.views.shouts :as view]
+						[shouter.mytika :as tika]
 						[shouter.models.shout :as model]))
 						
 (defn index []
@@ -28,9 +30,9 @@
   (view/or_matches (model/sql_filter terms) terms))
 	
 (defn create
-	[shout]
-	(println shout)
-	(model/create shout)
+	[doc]
+	(println doc)
+	(model/create doc)
 	(ring/redirect "/"))
 	
 (defroutes routes
@@ -38,10 +40,15 @@
 	(GET "/index" [] (index))
 	(GET "/new_doc" [] (new_doc))
 
-	(POST "/" [& shout] (create shout))
+	(POST "/" [& doc] (create doc))
+	
+	(mp/wrap-multipart-params
+		(POST "/file" {params :params} 
+			(create (tika/parser (:tempfile (:file params))))))
 	(POST "/terms" [& terms] 
 		(if (= (:all? terms) "all")
 			  (scanned_index terms)
 				(if (=(:all? terms) "either")
 					(or_matching_documents terms)
 					(and_matching_documents terms)))))
+					

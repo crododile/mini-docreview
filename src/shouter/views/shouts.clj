@@ -6,9 +6,12 @@
 						
 (defn shout-form []
 	[:div {:id "shout-form" :class "add-form"}
+		[:form {:action "/file" :method "post" :enctype "multipart/form-data"}
+		 [:input {:name "file" :type "file" :size "20"}]
+		 [:input {:type "submit" :name "submit" :value "submit"}]]
 	 (form/form-to [:post "/"]
-								 (form/label "shout" "Add Document to DB")
-								 (form/text-area "shout")
+								 (form/label "body" "Add Document to DB")
+								 (form/text-area "body")
 								 (form/submit-button "Create Document"))])
 								 
 (defn terms-form []

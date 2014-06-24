@@ -32,6 +32,6 @@
 	(sql/query spec 
 		[(str "select * FROM shouts WHERE id = " target)]))
 	
-(defn create [shout]
+(defn create [doc]
 	(sql/insert! spec :shouts [:body] 
-			[(shout :shout)]))
+			[(doc :body)]))
