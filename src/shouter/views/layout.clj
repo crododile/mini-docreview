@@ -1,5 +1,6 @@
 (ns shouter.views.layout
-	(:require [hiccup.page :as h]))
+	(:require [hiccup.page :as h])
+	(:require [hiccup.element :as el]))
 	
 (defn common [title & body]
 	(h/html5
@@ -12,9 +13,16 @@
 		[:title title]
 		(h/include-css "/stylesheets/base.css"
 									 "/stylesheets/skeleton.css"
-									 "/stylesheets/screen.css")
+									 "/stylesheets/screen.css"
+									 "/stylesheets/mine.css")
 		(h/include-css "http://fonts.goggleapis.com/css?family=Sigmar+One&v1")
 	 [:body
+	  [:h1 "DOC REVIEW JR"]
+		[:nav
+		 (el/link-to {:id "search"} "/" "Search")
+		 (el/link-to {:id "add"} "/new_doc" "Add Doc to DB")
+		 (el/link-to {:id "index"} "/index" "View All Docs")
+		 ]
 		[:div {:id "content" :class "container"} body]]))
 		
 (defn four-oh-four []

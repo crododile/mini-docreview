@@ -8,35 +8,40 @@
 (defn index []
 	(view/index (model/all)))
 	
+(defn new_doc []
+	(view/new_doc))
+	
+(defn search_form []
+	(view/search_form))
+	
 (defn show [target]
 	(view/show (model/one target)))
 	
 (defn scanned_index [terms]
 	(view/scanned_index (model/all) terms))
 	
-(defn matching_documents [terms]
-  (view/only_matches (model/sqlFilter terms) terms))
+(defn and_matching_documents [terms]
+	(println (model/sql_and_filter terms))
+	(view/and_matches (model/sql_and_filter terms) terms))
+	
+(defn or_matching_documents [terms]
+  (view/or_matches (model/sql_filter terms) terms))
 	
 (defn create
 	[shout]
 	(println shout)
-	(def matches (view/parse shout))
-	(def shot (conj shout [:match matches]))
-	(println shot)
-	(model/create shot)
+	(model/create shout)
 	(ring/redirect "/"))
 	
 (defroutes routes
-	(GET "/" [] (index))
-	(GET "/:id" [id] (show id))
+	(GET "/" [] (search_form))
+	(GET "/index" [] (index))
+	(GET "/new_doc" [] (new_doc))
+
 	(POST "/" [& shout] (create shout))
 	(POST "/terms" [& terms] 
-	  (println terms)
-		(println (:all? terms))
-		(println (terms :all?))
-		(if (= (:all? terms) "true")
-			(do 
-				(println "getting all") 
-			  (scanned_index terms))
-			(do (println "it was flase")
-			(matching_documents terms)))))
+		(if (= (:all? terms) "all")
+			  (scanned_index terms)
+				(if (=(:all? terms) "either")
+					(or_matching_documents terms)
+					(and_matching_documents terms)))))
